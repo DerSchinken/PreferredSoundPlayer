@@ -25,10 +25,10 @@
 #
 #   ----------------Linux------------------
 #   Linux uses ALSA and gstreamer, part of Linux kernel, also may use ffmpg if available
-
 #   -Linux will always play .wavs with ALSA
 #   Otherwise:
-#   -Linux will use the first available player in this order: gst-1.0-play, ffmpeg, gst playbin(built on the fly) or ALSA
+#   -Linux will use the first available player in this order: gst-1.0-play, ffmpeg,
+#    gst playbin(built on the fly) or ALSA
 #   -Linux will try to use gst-1.0-play first (usually present), if not present then
 #   -Linux will try to use ffmpeg as its player (usually present), if not present then
 #   -Linux will initialize a gstreamer playbin player (is supposed to always be present), if not present then
@@ -40,6 +40,7 @@
 #   ----------------MacOS-------------------
 #   -MacOS uses the afplay module which is present OS X 10.5 and later
 #
+from __future__ import annotations
 from typing import Any, List, Tuple, Union
 
 import sndhdr
@@ -66,7 +67,7 @@ if system() == "Windows":
     from threading import Thread
     from time import sleep
 
-PROCESS = Union[str | List[Any, str] | Tuple[str, str] | subprocess.Popen[str], subprocess.Popen]
+PROCESS = Union[Union[str, List[Any, str], Tuple[str, str], subprocess.Popen[str]], subprocess.Popen]
 
 
 # This module creates a single sound with winmm.dll API and returns the alias to the sound
@@ -349,22 +350,18 @@ def _soundplay_linux(
             print("must use ALSA, all else failed")
             command = "exec aplay --quiet " + os.path.abspath(file_name)
     if block:
-        P = subprocess.Popen(command, universal_newlines=True,
-                             shell=True, stdout=PIPE, stderr=PIPE).communicate()
+        P = subprocess.Popen(command, universal_newlines=True, shell=True, stdout=PIPE, stderr=PIPE).communicate()
     else:
-        P = subprocess.Popen(command, universal_newlines=True,
-                             shell=True, stdout=PIPE, stderr=PIPE)
+        P = subprocess.Popen(command, universal_newlines=True, shell=True, stdout=PIPE, stderr=PIPE)
     return P
 
 
 def _soundplay_mac_os(file_name: str, block: bool = False) -> subprocess.Popen:
     command = "exec afplay \'" + os.path.abspath(file_name) + "\'"
     if block:
-        P = subprocess.Popen(command, universal_newlines=True,
-                             shell=True, stdout=PIPE, stderr=PIPE).communicate()
+        P = subprocess.Popen(command, universal_newlines=True, shell=True, stdout=PIPE, stderr=PIPE).communicate()
     else:
-        P = subprocess.Popen(command, universal_newlines=True,
-                             shell=True, stdout=PIPE, stderr=PIPE)
+        P = subprocess.Popen(command, universal_newlines=True, shell=True, stdout=PIPE, stderr=PIPE)
     return P
 
 
