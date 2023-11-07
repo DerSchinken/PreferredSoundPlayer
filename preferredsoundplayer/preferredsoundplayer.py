@@ -187,7 +187,7 @@ def is_file_a_wav(file_name: str) -> bool:
 
 
 class MusicLooper:
-    def __init__(self, file_name):
+    def __init__(self, file_name: str):
         self.file_name = file_name
         self.playing = False
         self.song_process = None
