@@ -43,9 +43,12 @@ from __future__ import annotations
 import os
 import sndhdr
 import subprocess
-from platform import system
+from time import sleep
 from random import random
+from platform import system
 from subprocess import PIPE
+from threading import Thread
+from sys import getfilesystemencoding
 from typing import Any, List, Tuple, Union
 
 if system() == "Linux":
@@ -61,9 +64,6 @@ if system() == "Linux":
 
 if system() == "Windows":
     from ctypes import c_buffer, windll
-    from sys import getfilesystemencoding
-    from threading import Thread
-    from time import sleep
 
 PROCESS = Union[Union[str, List[Any], Tuple[str, str], subprocess.Popen], subprocess.Popen]
 
