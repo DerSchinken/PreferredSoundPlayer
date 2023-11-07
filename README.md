@@ -39,7 +39,7 @@ and this will import all its functions.
 
 The module essentially contains 3 functions for working with sound files:
 ```python
-yourSound = soundplay("yourfilename.mp3") # or just soundplay("yourfilename.mp3")
+yourSound = soundplay("yourfilename.mp3")  # or just soundplay("yourfilename.mp3")
 
 stopsound(yourSound)
 
@@ -63,20 +63,20 @@ you will have to use the return value of soundplay.  Read a little further and t
 
 #### To play a sound file:
 ```python
-soundplay("coolhipstersong.mp3") #-> this plays the mp3 file
-mysong = soundplay("coolhipstersong.mp3") #-> this plays the mp3 and also returns a reference to the song.
+soundplay("coolhipstersong.mp3")  # -> this plays the mp3 file
+mysong = soundplay("coolhipstersong.mp3")  # -> this plays the mp3 and also returns a reference to the song.
 ```
 
 #### To stop your song:
 ```python
-stopsound(mysong) # -> this stops mysong, which you created in the line above
+stopsound(mysong)  # -> this stops mysong, which you created in the line above
 ```
 
 #### To find out if your wave file is playing:
 ```python
-isitplaying = get_is_playing(mysong) -> sets a variable to True or False, depending on if process is running
+isitplaying = get_is_playing(mysong)  # -> sets a variable to True or False, depending on if process is running
 
-print(get_is_playing(mysong)) -> prints True or False depending on if process is running
+print(get_is_playing(mysong))  # -> prints True or False depending on if process is running
 
 if get_is_playing(mysong):
     print("Yes, your song is playing")
@@ -86,20 +86,20 @@ else:
 
 #### To play a sound file synchronously (main progam halts while sound plays):
 ```python
-soundplay("coolhipsong.mp3",1) #-> this plays the mp3 file synchronously
+soundplay("coolhipsong.mp3",1)  # -> this plays the mp3 file synchronously
 ```
 or
-```
-soundplay("coolhipsong.mp3",block=True)
+```python
+soundplay("coolhipsong.mp3", block=True)
 ```
 
 * Note: commands below will work, but you cannot stop the song, because your progam will be blocked until the song is done playing
 ```python
-mysong = soundplay("coolhipstersong.mp3",1) #-> this plays the wav file synchronously and also returns the song reference
+mysong = soundplay("coolhipstersong.mp3", True) # -> this plays the wav file synchronously and also returns the song reference
 ```
 or 
 ```python
-mysong = soundplay("coolhipstersong.mp3",block=True) #-> this plays the wav file synchronously and also returns the song reference
+mysong = soundplay("coolhipstersong.mp3", block=True) # -> this plays the wav file synchronously and also returns the song reference
 ```
 #### To play a wave file in a continuous loop:
 ```python
@@ -143,7 +143,7 @@ See https://pypi.org/project/oswaveplayer/ for an example.
 This is not a bad approach, but there is a little delay with the sound launch using the command line version.  This may not be a big issue for you when playing background music.  Another way to play multiple background sounds at once would be to use another module or to add the oswaveplayer to your project with the import statement:
 
 ```python
-from oswaveplayer import oswaveplayer        #(this can be installed with "pip install oswaveplayer")
+from oswaveplayer import oswaveplayer  # this can be installed with "pip install oswaveplayer"
 ```
 then use:
 ```python
@@ -156,7 +156,7 @@ oswaveplayer.stoploop(backgroundSong)
 This is not a bad approach, but due to the perceptible delay in playing the sound, it is not preferred to me.  You can also look over the source code to see how to launch sounds using this approach, as it is very basic.
 
 ### Linux
-As far as I know the gst-1.0-play command is usually available on linux distributions.  It has almost always has been for me and its part of the gstreamer library.  My understanding is it can be built from the gstreamer library and that library has been included with the standard Linux kernel for a long time.  It may not be built and ready to go in a Linux disto though or even on path.  So I first try this player.  If that does not work, I try to play the file with ffmpeg command from the ffmpeg project.  As far as I know, it is not part of the standard Linux kerrnel, but is usually present on most distros.  If these 2 commands are not present, which is unusual, the program will use the gstreamer library, which should be present to make a playbin player using the gstreamer library.  I do this a little differently than some other players, as I initialize a gst playbin player for each sound.  (Otherwise, you will get quite a few warnings, some critical related to the internal looping of the gst player). If this fails for some reason (maybe in the future, some import statement changes, who knows??) it will play with the ALSA player.  mp3s will not sound right, but like white noise.
+As far as I know the `gst-1.0-play` command is usually available on linux distributions.  It has almost always has been for me and its part of the gstreamer library.  My understanding is it can be built from the gstreamer library and that library has been included with the standard Linux kernel for a long time.  It may not be built and ready to go in a Linux disto though or even on path.  So I first try this player.  If that does not work, I try to play the file with ffmpeg command from the ffmpeg project.  As far as I know, it is not part of the standard Linux kerrnel, but is usually present on most distros.  If these 2 commands are not present, which is unusual, the program will use the gstreamer library, which should be present to make a playbin player using the gstreamer library.  I do this a little differently than some other players, as I initialize a gst playbin player for each sound.  (Otherwise, you will get quite a few warnings, some critical related to the internal looping of the gst player). If this fails for some reason (maybe in the future, some import statement changes, who knows??) it will play with the ALSA player.  mp3s will not sound right, but like white noise.
 
 ### MacOS
 `afplay` system calls work great on 'MacOS'.  I see no reason to invoke different methods at this point in time.  I do not want to concern myself with trying to make this module work with significantly older versions of MacOS before `afplay` was available.  My perception is that people typically would rather use Linux on an old computer systems instead of loading old versions of MacOS.  `afplay` has been present for some time now on MacOS.  Please contact me if you think this really needs to work on older versions of MacOS.
