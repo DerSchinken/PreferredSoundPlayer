@@ -1,0 +1,25 @@
+name: Quick and dirty test
+
+on:
+  push:
+    branches: [ "*" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.6"
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Run quick and dirty test
+      run: |
+        python Test/test.py
