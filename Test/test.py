@@ -1,3 +1,5 @@
+import os; print(os.getcwd())
+
 from preferredsoundplayer import soundplay, stopsound, loopsound, stoploop, get_is_playing, get_is_loop_playing
 import time
 
