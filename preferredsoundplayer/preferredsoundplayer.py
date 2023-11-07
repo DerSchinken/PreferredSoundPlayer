@@ -40,6 +40,7 @@
 #   -MacOS uses the afplay module which is present OS X 10.5 and later
 from __future__ import annotations
 
+import os
 import sndhdr
 import subprocess
 from platform import system
@@ -57,7 +58,6 @@ if system() == "Linux":
         from gi.repository import Gst
     except:
         pass
-    import os
 
 if system() == "Windows":
     from ctypes import c_buffer, windll
