@@ -78,11 +78,11 @@ stopsound(mysong) # -> this stops mysong, which you created in the line above
 #### To find out if your wave file is playing:
 
 ```
-isitplaying = getIsPlaying(mysong) -> sets a variable to True or False, depending on if process is running
+isitplaying = get_is_playing(mysong) -> sets a variable to True or False, depending on if process is running
 
-print(getIsPlaying(mysong)) -> prints True or False depending on if process is running
+print(get_is_playing(mysong)) -> prints True or False depending on if process is running
 
-if getIsPlaying(mysong)==True:
+if get_is_playing(mysong):
     print("Yes, your song is playing")
 else:
     print("Your song is not playing")
