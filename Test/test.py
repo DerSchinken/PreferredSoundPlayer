@@ -2,7 +2,7 @@ import os
 print(os.getcwd())
 print(os.listdir("."))
 print(list(os.walk(".")))
-from preferredsoundplayer import soundplay, stopsound, loopsound, stoploop, get_is_playing, get_is_loop_playing
+from ..preferredsoundplayer import soundplay, stopsound, loopsound, stoploop, get_is_playing, get_is_loop_playing
 
 import time
 
