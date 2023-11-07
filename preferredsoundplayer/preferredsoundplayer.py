@@ -22,7 +22,6 @@
 #       https://github.com/michaelgundlach/mp3play
 #       & https://github.com/TaylorSMarks/playsound/blob/master/playsound.py
 #
-#
 #   ----------------Linux------------------
 #   Linux uses ALSA and gstreamer, part of Linux kernel, also may use ffmpg if available
 #   -Linux will always play .wavs with ALSA
@@ -39,15 +38,14 @@
 #
 #   ----------------MacOS-------------------
 #   -MacOS uses the afplay module which is present OS X 10.5 and later
-#
 from __future__ import annotations
-from typing import Any, List, Tuple, Union
 
 import sndhdr
 import subprocess
 from platform import system
 from random import random
 from subprocess import PIPE
+from typing import Any, List, Tuple, Union
 
 if system() == "Linux":
     import shutil
@@ -67,12 +65,10 @@ if system() == "Windows":
     from threading import Thread
     from time import sleep
 
-PROCESS = Union[Union[str, List[Any, str], Tuple[str, str], subprocess.Popen[str]], subprocess.Popen]
+PROCESS = Union[Union[str, List[Any], Tuple[str, str], subprocess.Popen], subprocess.Popen]
 
 
 # This module creates a single sound with winmm.dll API and returns the alias to the sound
-
-
 class WinMMSoundPlayer:
     def __init__(self):
         self.is_song_playing = False
@@ -84,10 +80,10 @@ class WinMMSoundPlayer:
         self.alias_list = []
 
     # typical process for using winmm.dll
-    def _process_windows_command(self, command_string: str) -> Any:
+    @staticmethod
+    def _process_windows_command(command_string: str) -> Any:
         buf = c_buffer(255)
         command = command_string.encode(getfilesystemencoding())
-        # print(command)
         windll.winmm.mciSendStringA(command, buf, 254, 0)
         return buf.value
 
@@ -130,24 +126,20 @@ class WinMMSoundPlayer:
         # print("adding ", self.alias)# <------- unprint
         self.alias_list.append(self.alias)
 
-        str1 = "open \"" + os.path.abspath(self.file_name) + "\"" + " alias " + self.alias
-        self._process_windows_command(str1)
+        open_command = "open \"" + os.path.abspath(self.file_name) + "\"" + " alias " + self.alias
+        self._process_windows_command(open_command)
 
         # use the wait feature to block or not block when constructing mciSendString command
         if not block:
-            str1 = "play " + self.alias
             # play the sound
-            self._process_windows_command(str1)
+            self._process_windows_command("play " + self.alias)
         else:
             # construct mciSendString command to wait i.e. blocking
-            str1 = "play " + self.alias + " wait"
             # play the sound (blocking)
-            self._process_windows_command(str1)
+            self._process_windows_command("play " + self.alias + " wait")
             # stop and close the sound after done
-            str1 = "stop " + self.alias
-            self._process_windows_command(str1)
-            str1 = "close " + self.alias
-            self._process_windows_command(str1)
+            self._process_windows_command("stop " + self.alias)
+            self._process_windows_command("close " + self.alias)
 
         # return the alias of the sound
         return self.alias
@@ -160,26 +152,22 @@ class WinMMSoundPlayer:
         self.alias_list.append(self.loop_alias)
         open_command = "open \"" + os.path.abspath(file_name) + "\" type mpegvideo alias " + self.loop_alias
         self._process_windows_command(open_command)
-        play_command = "play " + self.loop_alias + " repeat"
-        self._process_windows_command(play_command)
+        self._process_windows_command("play " + self.loop_alias + " repeat")
         return self.loop_alias
 
     # issue stop and close commands using the sound's alias
     def stopsound(self, sound: str) -> None:
         # print("------------------------")
         try:
-            stop_command = "stop " + sound
-            self._process_windows_command(stop_command)
-            close_command = "close " + sound
-            self._process_windows_command(close_command)
+            self._process_windows_command("stop " + sound)
+            self._process_windows_command("close " + sound)
         except:
             pass
 
     # return True or False if song alias 'status' is 'playing'
     def get_is_playing(self, song: str) -> bool:
         try:
-            status_command = "status " + song + " mode"
-            status = self._process_windows_command(status_command)
+            status = self._process_windows_command("status " + song + " mode")
             if status == b"playing":
                 self.is_song_playing = True
             else:
@@ -203,7 +191,6 @@ class MusicLooper:
         self.file_name = file_name
         self.playing = False
         self.song_process = None
-        # self.optionalForMp3s_CheckRestartHowOften = .2
 
     def _playwave(self) -> None:
         self.song_process = playwave(self.file_name)
@@ -230,7 +217,6 @@ class MusicLooper:
         # self.optionalForMp3s_CheckRestartHowOften=optionalForMp3s_CheckRestartHowOften
         if self.playing:  # don't allow more than one background loop per instance of MusicLooper
             print("Already playing, stop before starting new.")
-            return
         else:
             self.playing = True
             t = Thread(target=self._playloop)  # , daemon=True)
@@ -241,7 +227,6 @@ class MusicLooper:
     def stop_music_loop(self) -> None:
         if not self.playing:
             print(str(self.song_process) + " already stopped, play before trying to stop.")
-            return
         else:
             self.playing = False  # set playing to False, which stops loop
             # issue command to stop the current wave file playing also, so song does not finish out
@@ -262,8 +247,6 @@ class MusicLooper:
 
 
 # Each sound gets its own Gst.init() and own sound player
-
-
 class SingleSoundLinux:
     def __init__(self):
         import gi
@@ -292,21 +275,21 @@ class SingleSoundLinux:
         else:
             print("already playing, open new SingleSound if you need to play simoultaneously")
 
-    def stopsound(self, sound: List[Any, str]) -> None:
-        # print(sound[1])
+    @staticmethod
+    def stopsound(sound: List[Any, str]) -> None:
         if sound[1] == "gstreamer":
             sound[0].set_state(Gst.State.NULL)
 
-    def get_is_playing(self, song: List[Any, str]) -> bool:
+    @staticmethod
+    def get_is_playing(song: List[Any, str]) -> bool:
         if song is None:
             return False
-        # print(song[1])
+
         if song[1] == "gstreamer":
             state = (str(song[0].get_state(Gst.State.PLAYING)[1]).split()[1])
             if state == "GST_STATE_READY" or state == "GST_STATE_PLAYING":
                 return True
-            else:
-                return False
+            return False
 
 
 #########################################################################
@@ -318,17 +301,14 @@ class SingleSoundLinux:
 # 3 separate methods allows for the Windows module to initialize an instance of 'WinMMSoundPlayer' class
 # this way only one windows type player allows to keep track of all aliases made and garbage can be collected
 # when songs have finished playing
-
-
 def _soundplay_windows(file_name: str, block: bool = False) -> str:
-    song = windowsPlayer.soundplay(file_name, block)  # change
-    return song
+    return windowsPlayer.soundplay(file_name, block)
 
 
 def _soundplay_linux(
         file_name: str,
         block: bool = False
-) -> Union[List[Any, str] | Tuple[str, str] | subprocess.Popen[str]]:
+) -> Union[List[Any] | Tuple[str, str] | subprocess.Popen]:
     if is_file_a_wav(file_name):  # use alsa if .wav
         # print("using alsa because its a wav")
         command = "exec aplay --quiet " + os.path.abspath(file_name)
@@ -342,10 +322,8 @@ def _soundplay_linux(
         try:
             import gi
             gi.require_version('Gst', '1.0')
-            from gi.repository import Gst
-            song = SingleSoundLinux().soundplay(file_name, block)
             # print("using gst playbin - successful try")
-            return song
+            return SingleSoundLinux().soundplay(file_name, block)
         except:
             print("must use ALSA, all else failed")
             command = "exec aplay --quiet " + os.path.abspath(file_name)
@@ -367,8 +345,6 @@ def _soundplay_mac_os(file_name: str, block: bool = False) -> subprocess.Popen:
 
 # stops the wave being played, 'process' in the case of windows is actually the alias to the song
 # otherwise process is a process in other operating systems.
-
-
 def stopsound(process: PROCESS) -> None:
     if process is not None:
         try:
@@ -392,54 +368,39 @@ def stopsound(process: PROCESS) -> None:
 
 
 # pass the process or alias(windows) to the song and return True or False if it is playing
-
-
 def get_is_playing(process: PROCESS) -> bool:
     if system() == "Windows":
         return windowsPlayer.get_is_playing(process)
-    else:
-        is_song_playing = False
-        if process is not None:
-            # see if process is GSTPlaybin
-            if system() == "Linux":
-                # see if process is GSTPlaybin
-                if str(process).find("gstreamer") != -1:
-                    return SingleSoundLinux().get_is_playing(process)
-                else:  # Linux but not GSTPlaybin
-                    try:
-                        return process.poll() is None
-                    except:
-                        pass
-            else:
-                try:
-                    return process.poll() is None
-                except:
-                    pass
 
-        return is_song_playing
+    is_song_playing = False
+    if process is not None:
+        # see if process is GSTPlaybin
+        if system() == "Linux":
+            # see if process is GSTPlaybin
+            if str(process).find("gstreamer") != -1:
+                return SingleSoundLinux().get_is_playing(process)
+            try: # Linux but not GSTPlaybin
+                return process.poll() is None
+            except:
+                pass
+        else:
+            try:
+                return process.poll() is None
+            except:
+                pass
+
+    return is_song_playing
 
 
 # this function will loop a wave file and return an instance of a MusicLooper object that loops music,
 # or in the case of Windows it just calls the loop function in the Windows SingleSoundWindows class
-
-"""
-def loopsound(fileName,optionalForMp3s_CheckRestartHowOften=.2):
-    if system() == "Windows":
-        return(windowsPlayer.loopsound(fileName))
-    else:
-        looper=MusicLooper(fileName)
-        looper.startMusicLoopWave(optionalForMp3s_CheckRestartHowOften)
-        return(looper)
-"""
-
-
 def loopsound(file_name: str) -> Union[str | MusicLooper]:
     if system() == "Windows":
         return windowsPlayer.loopsound(file_name)
-    else:
-        looper = MusicLooper(file_name)
-        looper.start_music_loop_wave()
-        return looper
+
+    looper = MusicLooper(file_name)
+    looper.start_music_loop_wave()
+    return looper
 
 
 # pass an instance of a MusicLooper object and stop the loop, in Windows,
@@ -451,8 +412,8 @@ def stoploop(looper_object: Union[str | MusicLooper]) -> None:
         else:
             looper_object.stop_music_loop()
     else:
-        pass
         # print("looperObject ", str(looperObject), " not playing")
+        pass
 
 
 # checks to see if song process is playing, (or if song alias's
@@ -461,10 +422,8 @@ def get_is_loop_playing(looper_object: Union[str | MusicLooper]) -> bool:
     if looper_object is not None:
         if system() == "Windows":
             return get_is_playing(looper_object)
-        else:
-            return looper_object.get_playing()
-    else:
-        return False
+        return looper_object.get_playing()
+    return False
 
 
 # This just references the command 'playsound' to 'soundplay' with
@@ -478,10 +437,8 @@ def playsound(file_name: str, block: bool = True) -> PROCESS:
 if system() == 'Windows':
     windowsPlayer = WinMMSoundPlayer()  # uses a single instance of the WinMMSoundPlayer class
     soundplay = windowsPlayer.soundplay
-
 elif system() == 'Darwin':
     soundplay = _soundplay_mac_os
-
 else:
     soundplay = _soundplay_linux
 # --------------------------------------------------------------------------------------------
