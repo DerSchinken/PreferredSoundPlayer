@@ -1,8 +1,8 @@
-import os; os.chdir("../")
+import os
 print(os.listdir("."))
-print(os.walk("."))
+print(list(os.walk(".")))
 from preferredsoundplayer import soundplay, stopsound, loopsound, stoploop, get_is_playing, get_is_loop_playing
-os.chdir("Test/")
+
 import time
 
 x = soundplay("test-music.mp3", block=False)  # got it from https://pixabay.com/de/music/spannung-epic-hybrid-trailer-test-of-the-brave-128341/
